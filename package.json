@@ -6,11 +6,21 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "src/**/*.{js,ts,tsx}": [
+      "eslint --fix"
+    ],
+    "*.+(js|jsx|json|yml|yaml|css|less|css|scss |ts|tsx| md|graphql|mdx)": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "formik": "^2.2.9",
+    "lint-staged": "^11.2.3",
     "mongodb": "^4.0.1",
     "next": "11.1.1",
     "next-auth": "^3.27.3",
@@ -21,6 +31,8 @@
   },
   "devDependencies": {
     "eslint": "7.32.0",
-    "eslint-config-next": "11.0.1"
+    "eslint-config-next": "11.0.1",
+    "husky": "^7.0.0",
+    "prettier": "^2.4.1"
   }
 }
