@@ -39,7 +39,18 @@ export default NextAuth({
         }
 
         client.close();
-        return { email: user.email, name: user.name };
+        return {
+          uid: user.id,
+          email: user.email,
+          name: user.name,
+          documents: user.documents,
+          address: user.address,
+          city: user.city,
+          country: user.country,
+          phone: user.phone,
+          postal: user.postal,
+          province: user.province,
+        };
       },
     }),
   ],
