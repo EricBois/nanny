@@ -1,24 +1,21 @@
-import getStripe from "lib/get-stripejs";
+import CheckoutPageContent from "components/checkout-page";
 
 export default function CheckoutPage() {
-  const onClickHandler = async (event) => {
-    const { sessionId } = await fetch("api/checkout-session", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({ quantity: 1 }),
-    }).then((res) => res.json());
-
-    const stripe = await getStripe();
-    const { error } = await stripe.redirectToCheckout({ sessionId });
-  };
-
-  return (
-    <div>
-      <button role="link" onClick={onClickHandler}>
-        checkout
-      </button>
-    </div>
-  );
+  return <CheckoutPageContent />;
 }
+
+// export async function getServerSideProps(context) {
+//   const session = await getSession({ req: context.req });
+//   if (!session) {
+//     return {
+//       redirect: {
+//         destination: "/auth",
+//         permanent: false,
+//       },
+//     };
+//   }
+
+//   return {
+//     props: { session },
+//   };
+// }

@@ -1,23 +1,29 @@
-import Stripe from "stripe";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2020-08-27",
-});
+import stripe from "lib/stripe";
 
 const sessions = async (req, res) => {
-  const { quantity } = req.body;
+  const prices = await stripe.prices.list({
+    lookup_keys: [req.body.lookup_key],
+    expand: ["data.product"],
+  });
+
   const session = await stripe.checkout.sessions.create({
+    billing_address_collection: "auto",
+    payment_method_types: ["card"],
     line_items: [
       {
-        price: process.env.PRICE_ID,
-        quantity,
+        price: prices.data[0].id,
+        quantity: 1,
       },
     ],
-    payment_method_types: ["card"],
-    mode: "payment",
-    success_url: `${req.headers.origin}/result?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${req.headers.origin}/checkout`,
+    mode: "subscription",
+    subscription_data: {
+      trial_period_days: 30,
+    },
+    // automatic_tax: { enabled: true },
+    success_url: `http://localhost:3000/?success=true&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `http://localhost:3000/?canceled=true`,
   });
+
   res.status(200).json({ sessionId: session.id });
 };
 
