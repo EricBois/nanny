@@ -1,6 +1,8 @@
-import stripe from "lib/stripe";
+import stripe from "utils/stripe/stripe";
 
 const sessions = async (req, res) => {
+  const DOMAIN = req.headers.origin;
+
   const prices = await stripe.prices.list({
     lookup_keys: [req.body.lookup_key],
     expand: ["data.product"],
@@ -19,9 +21,8 @@ const sessions = async (req, res) => {
     subscription_data: {
       trial_period_days: 30,
     },
-    // automatic_tax: { enabled: true },
-    success_url: `http://localhost:3000/?success=true&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `http://localhost:3000/?canceled=true`,
+    success_url: `${DOMAIN}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${DOMAIN}/?canceled=true`,
   });
 
   res.status(200).json({ sessionId: session.id });
