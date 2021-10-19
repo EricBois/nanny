@@ -1,5 +1,6 @@
 import { Field, Form, Formik, FormikProps } from "formik";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useS3Upload } from "next-s3-upload";
 
 const Input = ({ field, form, ...props }) => {
@@ -21,14 +22,30 @@ const Section = ({ name, children }) => (
   </div>
 );
 
-function ProfileForm({ user }) {
+function ProfileForm() {
+  const [user, setUser] = useState({});
+
+  async function getUser() {
+    const response = await fetch("/api/user/profile", {
+      method: "GET",
+    });
+    const data = await response.json();
+    await setUser(data);
+  }
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
   const [isUploadComplete, setIsUploadComplete] = useState(false);
   const [loading, setLoading] = useState(false);
   const { uploadToS3 } = useS3Upload();
-
   const handleFilesChange = async ({ target }) => {
     setLoading(true);
-    const urls = [];
+    let urls = [];
+    if (user?.documents?.length >= 1) {
+      urls = [...user?.documents];
+    }
     const files = Array.from(target.files);
 
     for (let index = 0; index < files.length; index++) {
@@ -39,10 +56,11 @@ function ProfileForm({ user }) {
     setIsUploadComplete(true);
     setLoading(false);
     updateProfile({ documents: urls });
+    getUser();
   };
 
   async function updateProfile(info) {
-    const response = await fetch("/api/user/update-profile", {
+    const response = await fetch("/api/user/profile", {
       method: "PATCH",
       body: JSON.stringify(info),
       headers: {
@@ -52,21 +70,23 @@ function ProfileForm({ user }) {
 
     const data = await response.json();
   }
-  console.log(user);
   return (
     <section className="h-screen bg-gray-100 bg-opacity-50">
       <Formik
+        enableReinitialize
         initialValues={{
           name: user?.name || "",
           phone: user?.phone || "",
           address: user?.address || "",
           city: user?.city || "",
           province: user?.province || "",
-          country: user?.country | "",
+          country: user?.country || "",
           postal: user?.postal || "",
         }}
         onSubmit={async (values) => {
+          await setLoading(true);
           await updateProfile(values);
+          await setLoading(false);
         }}
       >
         <Form className="container max-w-2xl mx-auto shadow-md md:w-3/4">
@@ -79,13 +99,14 @@ function ProfileForm({ user }) {
             </div>
           </div>
           <div className="space-y-6 bg-white">
-            <Section name="Your Email"></Section>
+            <Section name="Your Email">{user?.email}</Section>
             <hr />
             <Section name="Personal Information">
               <Field
                 type="text"
                 name="name"
                 placeholder="Your Full Name"
+                required
                 component={Input}
               />
               <Field
@@ -139,8 +160,17 @@ function ProfileForm({ user }) {
                 <p>Loading ...</p>
               )}
               <br />
-              {isUploadComplete && "Done Uploading files to S3"}
+              <hr />
               {/* TODO LIST ALL DOCUMENTS UPLOADED */}
+              {user?.documents?.map((doc) => (
+                <Image
+                  src={doc}
+                  alt="document"
+                  width="150"
+                  height="150"
+                  key={doc}
+                />
+              ))}
             </div>
             <hr />
             <div className="w-full px-4 pb-4 ml-auto text-gray-500 md:w-1/3">
@@ -148,7 +178,7 @@ function ProfileForm({ user }) {
                 type="submit"
                 className="py-2 px-4  bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 focus:ring-offset-blue-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
               >
-                Next
+                {loading ? "Saving..." : "Save"}
               </button>
             </div>
             <hr />

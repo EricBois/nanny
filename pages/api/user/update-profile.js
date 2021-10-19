@@ -2,10 +2,6 @@ import { getSession } from "next-auth/client";
 import { connectToDatabase } from "../../../lib/db";
 
 async function handler(req, res) {
-  if (req.method !== "PATCH") {
-    return;
-  }
-
   const session = await getSession({ req: req });
 
   if (!session) {
@@ -27,13 +23,37 @@ async function handler(req, res) {
     return;
   }
 
-  const result = await usersCollection.updateOne(
-    { email: userEmail },
-    { $set: req.body }
-  );
+  let result;
+  switch (`${req.method}`) {
+    case "GET":
+      result = await usersCollection.findOne({ email: userEmail });
+      break;
+    case "POST":
+      // handlePost()
+      break;
+    case "PATCH":
+      result = await usersCollection.updateOne(
+        { email: userEmail },
+        { $set: req.body }
+      );
+      break;
+    default:
+      res.status(405).end(`Method ${req.method} Not Allowed`);
+      break;
+  }
 
   client.close();
-  res.status(200).json({ message: "Profile updated!", result: result });
+  res.status(200).json({
+    email: result.email,
+    name: result.name,
+    documents: result.documents,
+    address: result.address,
+    city: result.city,
+    country: result.country,
+    phone: result.phone,
+    postal: result.postal,
+    province: result.province,
+  });
 }
 
 export default handler;
