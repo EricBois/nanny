@@ -37,7 +37,7 @@ function UserProfile() {
   return (
     <section>
       <h1 className="text-center text-4xl">Your Profile</h1>
-      <ProfileForm user={user} onChangePassword={changePasswordHandler} />
+      <ProfileForm onChangePassword={changePasswordHandler} />
     </section>
   );
 }
