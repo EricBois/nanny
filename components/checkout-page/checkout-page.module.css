@@ -1,0 +1,72 @@
+.checkout {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  border-radius: 10px;
+  box-shadow: 1px 2px 2px hsl(0 0% 50% / 0.2), 2px 4px 4px hsl(0 0% 50% / 0.2),
+    4px 8px 8px hsl(0 0% 50% / 0.2), 8px 16px 16px hsl(0 0% 50% / 0.2),
+    16px 32px 32px hsl(0 0% 50% / 0.2);
+  width: 350px;
+  height: 400px;
+  align-items: center;
+  text-align: center;
+}
+
+.product h3 {
+  font-size: 2rem;
+  margin-bottom: 4px;
+}
+
+.product h5 {
+  position: relative;
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+}
+
+.product h5::after {
+  content: " ";
+  position: absolute;
+  display: block;
+  background: #72757e40;
+  height: 2px;
+  width: 150%;
+  bottom: -16px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  border-radius: 4px;
+}
+
+.description ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+.description li:before {
+  content: "\2713";
+  margin-right: 16px;
+}
+
+.btn {
+  background: blue;
+  color: white;
+  width: 50%;
+  padding: 12px 16px;
+  border-radius: 4px;
+  box-shadow: 0.5px 1px 1px hsl(0 0% 50% / 0.7);
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  box-shadow: 1px 2px 2px hsl(0 0% 50% / 0.333),
+    2px 4px 4px hsl(0 0% 50% / 0.333), 3px 6px 6px hsl(0 0% 50% / 0.333);
+  transform: scale(1.01);
+}

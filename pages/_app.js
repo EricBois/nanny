@@ -1,6 +1,5 @@
 import { Provider } from "next-auth/client";
 import "tailwindcss/tailwind.css";
-
 import Layout from "../components/layout/layout";
 import "../styles/globals.css";
 
