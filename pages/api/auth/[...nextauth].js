@@ -40,7 +40,6 @@ export default NextAuth({
 
         client.close();
         return {
-          uid: user.id,
           email: user.email,
           name: user.name,
           documents: user.documents,
