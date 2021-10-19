@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders homepage unchanged 1`] = `
+<section
+  className="starting"
+>
+  <h1>
+    Welcome page
+  </h1>
+</section>
+`;

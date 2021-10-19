@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test": "jest --watch"
   },
   "lint-staged": {
     "src/**/*.{js,ts,tsx}": [
@@ -33,9 +34,15 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^12.1.2",
+    "babel-jest": "^27.2.5",
     "eslint": "7.32.0",
     "eslint-config-next": "11.0.1",
     "husky": "^7.0.0",
-    "prettier": "^2.4.1"
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^27.2.5",
+    "prettier": "^2.4.1",
+    "react-test-renderer": "^17.0.2"
   }
 }
