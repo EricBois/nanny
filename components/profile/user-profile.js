@@ -1,7 +1,9 @@
-import ProfileForm from './profile-form';
-import classes from './user-profile.module.css';
+import ProfileForm from "./profile-form";
+import { useSession } from "next-auth/client";
 
 function UserProfile() {
+  const [session, loading] = useSession();
+  const { user } = session;
   // const [isLoading, setIsLoading] = useState(true);
 
   // useEffect(() => {
@@ -19,12 +21,12 @@ function UserProfile() {
   // }
 
   async function changePasswordHandler(passwordData) {
-    const response = await fetch('/api/user/change-password', {
-      method: 'PATCH',
+    const response = await fetch("/api/user/change-password", {
+      method: "PATCH",
       body: JSON.stringify(passwordData),
       headers: {
-        'Content-Type': 'application/json'
-      }
+        "Content-Type": "application/json",
+      },
     });
 
     const data = await response.json();
@@ -33,8 +35,8 @@ function UserProfile() {
   }
 
   return (
-    <section className={classes.profile}>
-      <h1>Your User Profile</h1>
+    <section>
+      <h1 className="text-center text-4xl">Your Profile</h1>
       <ProfileForm onChangePassword={changePasswordHandler} />
     </section>
   );
