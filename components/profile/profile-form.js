@@ -1,7 +1,8 @@
-import { Field, Form, Formik, FormikProps } from "formik";
+import { Field, Form, Formik, ErrorMessage } from "formik";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useS3Upload } from "next-s3-upload";
+import validationProfileSchema from "components/validation/validationProfileSchema";
 
 const Input = ({ field, form, ...props }) => {
   return (
@@ -37,7 +38,6 @@ function ProfileForm() {
     getUser();
   }, []);
 
-  const [isUploadComplete, setIsUploadComplete] = useState(false);
   const [loading, setLoading] = useState(false);
   const { uploadToS3 } = useS3Upload();
   const handleFilesChange = async ({ target }) => {
@@ -53,7 +53,6 @@ function ProfileForm() {
       const { url } = await uploadToS3(file);
       urls.push(url);
     }
-    setIsUploadComplete(true);
     setLoading(false);
     updateProfile({ documents: urls });
     getUser();
@@ -74,6 +73,7 @@ function ProfileForm() {
     <section className="h-screen bg-gray-100 bg-opacity-50">
       <Formik
         enableReinitialize
+        validationSchema={validationProfileSchema}
         initialValues={{
           name: user?.name || "",
           phone: user?.phone || "",
@@ -109,42 +109,55 @@ function ProfileForm() {
                 required
                 component={Input}
               />
+              <ErrorMessage name="name" />
               <Field
                 type="text"
                 name="phone"
+                required
                 placeholder="Phone Number"
                 component={Input}
               />
+              <ErrorMessage name="phone" />
               <Field
                 type="text"
                 name="address"
+                required
                 placeholder="Address"
                 component={Input}
               />
+              <ErrorMessage name="address" />
               <Field
                 type="text"
                 name="city"
+                required
                 placeholder="city"
                 component={Input}
               />
+              <ErrorMessage name="city" />
               <Field
                 type="text"
                 name="province"
+                required
                 placeholder="Province"
                 component={Input}
               />
+              <ErrorMessage name="province" />
               <Field
                 type="text"
                 name="country"
+                required
                 placeholder="Country"
                 component={Input}
               />
+              <ErrorMessage name="country" />
               <Field
                 type="text"
                 name="postal"
+                required
                 placeholder="Postal code"
                 component={Input}
               />
+              <ErrorMessage name="postal" />
             </Section>
             <hr />
             <div>
