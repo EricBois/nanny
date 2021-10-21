@@ -42,19 +42,25 @@ function ProfileForm() {
   const { uploadToS3 } = useS3Upload();
   const handleFilesChange = async ({ target }) => {
     setLoading(true);
-    let urls = [];
-    if (user?.documents?.length >= 1) {
-      urls = [...user?.documents];
-    }
-    const files = Array.from(target.files);
+    if (target.name === "file") {
+      let urls = [];
+      if (user?.documents?.length >= 1 && target.name === "file") {
+        urls = [...user?.documents];
+      }
+      const files = Array.from(target.files);
 
-    for (let index = 0; index < files.length; index++) {
-      const file = files[index];
-      const { url } = await uploadToS3(file);
-      urls.push(url);
+      for (let index = 0; index < files.length; index++) {
+        const file = files[index];
+        const { url } = await uploadToS3(file);
+        urls.push(url);
+      }
+      updateProfile({ documents: urls });
+    } else {
+      console.log(target);
+      const { url } = await uploadToS3(target.files[0]);
+      updateProfile({ photo: url });
     }
     setLoading(false);
-    updateProfile({ documents: urls });
     getUser();
   };
 
@@ -100,6 +106,19 @@ function ProfileForm() {
           </div>
           <div className="space-y-6 bg-white">
             <Section name="Your Email">{user?.email}</Section>
+            <hr />
+            <Section name="Your Picture">
+              {!loading ? (
+                <Input type="file" name="photo" onChange={handleFilesChange} />
+              ) : (
+                <p>Loading ...</p>
+              )}
+              <br />
+              <hr />
+              {user?.photo && (
+                <Image src={user?.photo} alt="Photo" width="150" height="150" />
+              )}
+            </Section>
             <hr />
             <Section name="Personal Information">
               <Field
