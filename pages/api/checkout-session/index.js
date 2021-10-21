@@ -6,7 +6,6 @@ const sessions = async (req, res) => {
   if (req.method !== "POST") {
     return;
   }
-  const DOMAIN = req.headers.origin;
   const authSession = await getSession({ req });
 
   if (!authSession) {
@@ -14,20 +13,21 @@ const sessions = async (req, res) => {
     return;
   }
 
+  const DOMAIN = req.headers.origin;
+
   const client = await connectToDatabase();
+
   const usersCollection = client.db().collection("users");
 
-  const currentUser = await usersCollection.findOne(
+  const user = await usersCollection.findOne(
     {
       email: authSession.user.email,
     },
     { projection: { password: 0 } }
   );
 
-  //todo: create stripe customer
-
   const newCustomer = await stripe.customers.create({
-    email: currentUser.email,
+    email: user.email,
     description: "New Customer",
   });
 
@@ -50,20 +50,16 @@ const sessions = async (req, res) => {
     subscription_data: {
       trial_period_days: 30,
     },
-    success_url: `${DOMAIN}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
+    success_url: `${DOMAIN}/profile`,
     cancel_url: `${DOMAIN}/?canceled=true`,
   });
-
-  // console.log(currentUser);
-  // console.log(newCustomer);
-  // console.log(req);
-  // console.log(authSession);
-  // console.log(stripeSession);
 
   const result = usersCollection.updateOne(
     { email: authSession.user.email },
     { $set: { customerId: stripeSession.customer } }
   );
+
+  client.close();
 
   res.status(200).json({ sessionId: stripeSession.id });
 };

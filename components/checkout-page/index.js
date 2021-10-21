@@ -6,12 +6,12 @@ import classes from "./checkout-page.module.css";
 export default function CheckoutPageContent() {
   const [loading, setLoading] = useState(false);
 
-  //todo: testing -> move this to profile page once fixed
+  //todo: testing -> move this to profile page once fixed, add error handling
   const redirectToCustomerPortal = async () => {
     setLoading(true);
     const response = await fetchPostJSON("api/create-portal-session", {});
-    if (error) return alert(error.message);
-    window.location.assign(url);
+    console.log(response);
+    window.location.assign(response.portalUrl);
     setLoading(false);
   };
 
