@@ -45,14 +45,11 @@ async function handler(req, res) {
   client.close();
   res.status(200).json({
     email: result.email,
+    photo: result.photo,
     name: result.name,
     documents: result.documents,
-    address: result.address,
-    city: result.city,
-    country: result.country,
     phone: result.phone,
-    postal: result.postal,
-    province: result.province,
+    location: result.location,
   });
 }
 
