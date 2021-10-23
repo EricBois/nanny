@@ -88,7 +88,7 @@ function ProfileForm() {
   return (
     <>
       <Script
-        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_PLACE_API}&libraries=places`}
+        src={`https://maps.googleapis.com/maps/api/js?key=AIzaSyDFnvaCrcSie-lMayV9tccH0VJpJyZ0yZA&libraries=places`}
         strategy="beforeInteractive"
       />
       <section className="h-screen bg-gray-100 bg-opacity-50">
