@@ -1,16 +1,45 @@
+import { connectToDatabase } from "lib/db";
+import { getSession } from "next-auth/client";
 import stripe from "utils/stripe/stripe";
 
 const sessions = async (req, res) => {
+  if (req.method !== "POST") {
+    return;
+  }
+  const authSession = await getSession({ req });
+
+  if (!authSession) {
+    res.status(401).json({ message: "Not authenticated!" });
+    return;
+  }
+
   const DOMAIN = req.headers.origin;
+
+  const client = await connectToDatabase();
+
+  const usersCollection = client.db().collection("users");
+
+  const user = await usersCollection.findOne(
+    {
+      email: authSession.user.email,
+    },
+    { projection: { password: 0 } }
+  );
+
+  const newCustomer = await stripe.customers.create({
+    email: user.email,
+    description: "New Customer",
+  });
 
   const prices = await stripe.prices.list({
     lookup_keys: [req.body.lookup_key],
     expand: ["data.product"],
   });
 
-  const session = await stripe.checkout.sessions.create({
+  const stripeSession = await stripe.checkout.sessions.create({
     billing_address_collection: "auto",
     payment_method_types: ["card"],
+    customer: newCustomer.id,
     line_items: [
       {
         price: prices.data[0].id,
@@ -21,11 +50,18 @@ const sessions = async (req, res) => {
     subscription_data: {
       trial_period_days: 30,
     },
-    success_url: `${DOMAIN}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
+    success_url: `${DOMAIN}/profile`,
     cancel_url: `${DOMAIN}/?canceled=true`,
   });
 
-  res.status(200).json({ sessionId: session.id });
+  const result = usersCollection.updateOne(
+    { email: authSession.user.email },
+    { $set: { customerId: stripeSession.customer } }
+  );
+
+  client.close();
+
+  res.status(200).json({ sessionId: stripeSession.id });
 };
 
 export default sessions;
