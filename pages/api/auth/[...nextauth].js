@@ -43,12 +43,7 @@ export default NextAuth({
           email: user.email,
           name: user.name,
           documents: user.documents,
-          address: user.address,
-          city: user.city,
-          country: user.country,
           phone: user.phone,
-          postal: user.postal,
-          province: user.province,
         };
       },
     }),
