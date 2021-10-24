@@ -26,7 +26,7 @@ async function handler(req, res) {
   let result;
   switch (`${req.method}`) {
     case "GET":
-      result = await usersCollection.findOne({ email: userEmail });
+      result = user;
       break;
     case "POST":
       // handlePost()
