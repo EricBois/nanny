@@ -45,6 +45,19 @@ function ProfileForm() {
     }
   }
 
+  async function deleteDoc(doc, file) {
+    await fetch("/api/s3-upload/s3-delete", {
+      method: "POST",
+      body: JSON.stringify({ document: doc, file: file }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      res.json();
+      getUser();
+    });
+  }
+
   useEffect(() => {
     getUser();
   }, []);
@@ -67,6 +80,10 @@ function ProfileForm() {
       updateProfile({ documents: urls });
     } else {
       // for profile pic
+      // delete existing first
+      if (user?.photo) {
+        await deleteDoc(user.photo, "photo");
+      }
       const { url } = await uploadToS3(target.files[0]);
       updateProfile({ photo: url });
     }
@@ -204,15 +221,21 @@ function ProfileForm() {
                 <br />
                 <hr />
                 {/* TODO LIST ALL DOCUMENTS UPLOADED */}
-                {user?.documents?.map((doc) => (
-                  <Image
-                    src={doc}
-                    alt="document"
-                    width="150"
-                    height="150"
-                    key={doc}
-                  />
-                ))}
+                <div style={{ display: "flex" }}>
+                  {user?.documents?.map((doc) => (
+                    <div key={doc}>
+                      <Image
+                        src={doc}
+                        alt="document"
+                        width="150"
+                        height="150"
+                      />
+                      <button onClick={() => deleteDoc(doc, "document")}>
+                        delete
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
               <hr />
               <div className="w-full px-4 pb-4 ml-auto text-gray-500 md:w-1/3">
