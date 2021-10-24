@@ -22,7 +22,7 @@ export default function SignIn({ login }) {
         password: values.password,
       });
       if (!response.error) {
-        router.replace("/profile");
+        router.replace("/");
         resetForm();
       } else {
         setError(response.error);

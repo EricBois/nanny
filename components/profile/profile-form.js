@@ -1,10 +1,10 @@
 import { Field, Form, Formik, ErrorMessage } from "formik";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useS3Upload } from "next-s3-upload";
 import validationProfileSchema from "components/validation/validationProfileSchema";
-import Script from "next/script";
 import PlacesAutoComplete from "../PlacesAutoComplete";
+import { useProfile } from "lib/profile";
 
 const Input = ({ field, form, ...props }) => {
   return (
@@ -27,23 +27,16 @@ const Section = ({ name, children }) => (
 
 // Get the user profile
 function ProfileForm() {
-  const [user, setUser] = useState({});
-  const [loading, setLoading] = useState(false);
-  // to show/hide address input
-  const [show, setShow] = useState(false);
+  const formRef = useRef();
+  const {
+    profile: user,
+    getProfile,
+    updateProfile,
+    loading,
+    show,
+    setShow,
+  } = useProfile();
   const { uploadToS3 } = useS3Upload();
-
-  async function getUser() {
-    const response = await fetch("/api/user/profile", {
-      method: "GET",
-    });
-    const data = await response.json();
-    await setUser(data);
-    await setShow(false);
-    if (!data?.location?.value) {
-      await setShow(true);
-    }
-  }
 
   async function deleteDoc(doc, file) {
     await fetch("/api/s3-upload/s3-delete", {
@@ -54,16 +47,15 @@ function ProfileForm() {
       },
     }).then((res) => {
       res.json();
-      getUser();
+      getProfile();
     });
   }
 
-  useEffect(() => {
-    getUser();
-  }, []);
-
   const handleFilesChange = async ({ target }) => {
-    setLoading(true);
+    // submit form before submit pic and it gets erased
+    if (formRef.current) {
+      formRef.current.handleSubmit();
+    }
     // for docs
     if (target.name === "file") {
       let urls = [];
@@ -87,41 +79,27 @@ function ProfileForm() {
       const { url } = await uploadToS3(target.files[0]);
       updateProfile({ photo: url });
     }
-    setLoading(false);
-    getUser();
   };
-
-  async function updateProfile(info) {
-    const response = await fetch("/api/user/profile", {
-      method: "PATCH",
-      body: JSON.stringify(info),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const data = await response.json();
-  }
+  if (loading) return <p>Loading ...</p>;
   return (
     <>
-      <Script
-        src={`https://maps.googleapis.com/maps/api/js?key=AIzaSyDFnvaCrcSie-lMayV9tccH0VJpJyZ0yZA&libraries=places`}
-        strategy="beforeInteractive"
-      />
       <section className="h-screen bg-gray-100 bg-opacity-50">
         <Formik
+          innerRef={formRef}
           enableReinitialize
           validationSchema={validationProfileSchema}
           initialValues={{
             name: user?.name || "",
             phone: user?.phone || "",
-            location: user.location?.value,
+            location: user?.location || {
+              address: "",
+              coordinates: { lat: "", lng: "" },
+              value: "",
+            },
           }}
           onSubmit={async (values) => {
-            await setLoading(true);
             await updateProfile(values);
-            await getUser();
-            await setLoading(false);
+            await getProfile();
           }}
         >
           <Form className="container max-w-2xl mx-auto shadow-md md:w-3/4">
@@ -134,8 +112,7 @@ function ProfileForm() {
               </div>
             </div>
             <div className="space-y-6 bg-white">
-              <Section name="Your Email">{user?.email}</Section>
-              <hr />
+              <Section name="Your Email">{user?.email}</Section> <hr />
               <Section name="Your Picture">
                 {!loading ? (
                   <Input
@@ -194,19 +171,30 @@ function ProfileForm() {
                 ]}
               >
                 {show ? (
-                  <Field
-                    type="text"
-                    name="location"
-                    required
-                    component={PlacesAutoComplete}
-                  />
+                  <div style={{ display: "flex" }}>
+                    <Field
+                      type="text"
+                      name="location"
+                      required
+                      component={PlacesAutoComplete}
+                    />
+                    {user?.location?.value?.length > 1 && (
+                      <button
+                        style={{ marginLeft: "5px" }}
+                        type="button"
+                        onClick={() => setShow(false)}
+                      >
+                        &times;
+                      </button>
+                    )}
+                  </div>
                 ) : (
                   `${user?.location?.value}`
                 )}
                 <ErrorMessage name="address" />
               </Section>
               <hr />
-              <div>
+              <Section name="Your Documentation">
                 <p>Include all your documents and certifications</p>
                 {!loading ? (
                   <Input
@@ -219,7 +207,6 @@ function ProfileForm() {
                   <p>Loading ...</p>
                 )}
                 <br />
-                <hr />
                 {/* TODO LIST ALL DOCUMENTS UPLOADED */}
                 <div style={{ display: "flex" }}>
                   {user?.documents?.map((doc) => (
@@ -230,13 +217,16 @@ function ProfileForm() {
                         width="150"
                         height="150"
                       />
-                      <button onClick={() => deleteDoc(doc, "document")}>
+                      <button
+                        type="button"
+                        onClick={() => deleteDoc(doc, "document")}
+                      >
                         delete
                       </button>
                     </div>
                   ))}
                 </div>
-              </div>
+              </Section>
               <hr />
               <div className="w-full px-4 pb-4 ml-auto text-gray-500 md:w-1/3">
                 <button

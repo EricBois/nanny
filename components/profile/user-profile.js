@@ -2,8 +2,6 @@ import ProfileForm from "./profile-form";
 import { useSession } from "next-auth/client";
 
 function UserProfile() {
-  const [session, loading] = useSession();
-  const { user } = session;
   // const [isLoading, setIsLoading] = useState(true);
 
   // useEffect(() => {
