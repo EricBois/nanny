@@ -28,10 +28,15 @@ const Section = ({ name, children }) => (
 // Get the user profile
 function ProfileForm() {
   const formRef = useRef();
-  const { profile, getProfile, updateProfile, loading, show, setShow } =
-    useProfile();
+  const {
+    profile: user,
+    getProfile,
+    updateProfile,
+    loading,
+    show,
+    setShow,
+  } = useProfile();
   const { uploadToS3 } = useS3Upload();
-  let user = profile;
 
   async function deleteDoc(doc, file) {
     await fetch("/api/s3-upload/s3-delete", {
@@ -64,8 +69,7 @@ function ProfileForm() {
         const { url } = await uploadToS3(file);
         urls.push(url);
       }
-      updateProfile({ ...profile, documents: urls });
-      // getProfile();
+      updateProfile({ documents: urls });
     } else {
       // for profile pic
       // delete existing first
