@@ -80,7 +80,7 @@ function ProfileForm() {
       updateProfile({ photo: url });
     }
   };
-  if (loading) return <p>Loading ...</p>;
+  // if (loading) return <p>Loading ...</p>;
   return (
     <>
       <section className="h-screen bg-gray-100 bg-opacity-50">
