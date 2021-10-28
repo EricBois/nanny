@@ -1,4 +1,4 @@
-import ProfileForm from "./profile-form";
+import ProfileForm from "./nanny-form";
 import { useSession } from "next-auth/client";
 
 function UserProfile() {

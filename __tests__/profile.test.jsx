@@ -1,4 +1,4 @@
-import Profile from "../components/profile/user-profile";
+import Profile from "../components/profile/nanny-profile";
 import { render, screen } from "@testing-library/react";
 import { useSession } from "next-auth/client";
 

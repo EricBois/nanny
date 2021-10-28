@@ -11,7 +11,7 @@ function AuthPage() {
   useEffect(() => {
     getSession().then((session) => {
       if (session) {
-        router.replace("/");
+        router.replace("/portal");
       } else {
         setIsLoading(false);
       }

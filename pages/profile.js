@@ -1,6 +1,6 @@
 import { getSession } from "next-auth/client";
 
-import UserProfile from "components/profile/user-profile";
+import UserProfile from "components/profile/nanny-profile";
 
 function ProfilePage() {
   return <UserProfile />;
