@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useS3Upload } from "next-s3-upload";
 import validationProfileSchema from "components/validation/validationProfileSchema";
-import PlacesAutoComplete from "../PlacesAutoComplete";
+import PlacesAutoComplete from "components/PlacesAutoComplete";
 import { useProfile } from "lib/profile";
 
 const Input = ({ field, form, ...props }) => {
@@ -26,7 +26,7 @@ const Section = ({ name, children }) => (
 );
 
 // Get the user profile
-function ProfileForm() {
+function FamilyForm() {
   const formRef = useRef();
   const {
     profile: user,
@@ -109,6 +109,7 @@ function ProfileForm() {
               <div className="max-w-sm mx-auto md:w-full md:mx-0">
                 <div className="inline-flex items-center space-x-4">
                   {/* <h1 className="text-gray-600"></h1> TODO DESCRIPTION HERE */}
+                  Family Form
                 </div>
               </div>
             </div>
@@ -246,4 +247,4 @@ function ProfileForm() {
   );
 }
 
-export default ProfileForm;
+export default FamilyForm;

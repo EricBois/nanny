@@ -1,7 +1,8 @@
 import { useProfile } from "lib/profile";
 import { getSession } from "next-auth/client";
 import { useState, useEffect } from "react";
-import Main from "../components/dashboard/Main";
+import Nanny from "../components/dashboard/Nanny";
+import Family from "components/dashboard/Family";
 import UserProfile from "components/profile/user-profile";
 
 export default function Dashboard() {
@@ -21,7 +22,11 @@ export default function Dashboard() {
 
   switch (status) {
     case "done":
-      return <Main />;
+      let component;
+      profile.profileType === "nanny"
+        ? (component = <Nanny />)
+        : (component = <Family />);
+      return component;
     case "form":
       return <UserProfile status={status} />;
   }

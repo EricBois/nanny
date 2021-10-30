@@ -1,17 +1,18 @@
 import { getSession } from "next-auth/client";
 import { useProfile } from "lib/profile";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { withRouter } from "next/router";
 
-export default function Portal() {
-  const router = useRouter();
+function Portal({ router }) {
   const { profile, updateProfile } = useProfile();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
     if (profile.profileType === "nanny" || profile.profileType === "family") {
-      router.push("/dashboard");
+      router.push({
+        pathname: "/dashboard",
+      });
     } else {
       setLoading(false);
     }
@@ -68,3 +69,5 @@ export async function getServerSideProps(context) {
     props: { session },
   };
 }
+
+export default withRouter(Portal);
