@@ -44,7 +44,7 @@ export default function Signup({ login }) {
           password: values.password,
         });
         if (!login.error) {
-          router.replace("/portal");
+          router.replace("/auth");
         } else {
           setError(response.error);
         }
