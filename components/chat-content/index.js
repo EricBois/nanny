@@ -1,58 +1,50 @@
-import Pusher from "pusher-js";
-import { useEffect, useState } from "react";
+import { useFormik } from "formik";
+import { useProfile } from "lib/profile";
+import { useSession } from "next-auth/client";
 import { fetchPostJSON } from "utils/api-helpers";
 
-export default function ChatContent({ sender, appKey }) {
-  const [chats, setChats] = useState([]);
-  const [messageToSend, setMessageToSend] = useState("");
+export default function ChatContent() {
+  const { chats } = useProfile();
 
-  useEffect(() => {
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY, {
-      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
-      //* Do we need this to be encrypted
-      // encrypted: true,
-    });
-    const channel = pusher.subscribe("chat");
+  const [session] = useSession();
+  const sender = session.user.name;
 
-    channel.bind("chat-event", function (data) {
-      setChats((prevState) => [
-        ...prevState,
-        { sender: data.sender, message: data.message },
-      ]);
-
-      return () => {
-        pusher.unsubscribe("chat");
-      };
-    });
-  }, []);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    await fetchPostJSON("/api/pusher", { message: messageToSend, sender });
-  };
+  const formik = useFormik({
+    initialValues: {
+      to: "",
+      message: "",
+    },
+    onSubmit: async ({ message, to }, { resetForm }) => {
+      await fetchPostJSON("api/pusher/message", { message, sender, to });
+    },
+  });
 
   return (
     <>
       <p>Hello, {sender}</p>
       <div>
         {chats.map((chat, id) => (
-          <>
+          <div key={id}>
             <p>{chat.message}</p>
             <small>{chat.sender}</small>
-          </>
+          </div>
         ))}
       </div>
 
-      <form
-        onSubmit={(e) => {
-          handleSubmit(e);
-        }}
-      >
+      <form onSubmit={formik.handleSubmit} method="POST">
         <input
+          id="message"
           type="text"
-          value={messageToSend}
-          onChange={(e) => setMessageToSend(e.target.value)}
+          value={formik.values.message}
+          onChange={formik.handleChange}
           placeholder="start typing...."
+        />
+        <input
+          id="to"
+          type="text"
+          value={formik.values.to}
+          onChange={formik.handleChange}
+          placeholder="Who this message for"
         />
         <button type="submit">Send</button>
       </form>

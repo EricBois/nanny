@@ -8,6 +8,8 @@ const sessions = async (req, res) => {
   }
   const authSession = await getSession({ req });
 
+  console.log(authSession);
+
   if (!authSession) {
     res.status(401).json({ message: "Not authenticated!" });
     return;
@@ -54,7 +56,7 @@ const sessions = async (req, res) => {
     cancel_url: `${DOMAIN}/?canceled=true`,
   });
 
-  const result = usersCollection.updateOne(
+  const result = await usersCollection.updateOne(
     { email: authSession.user.email },
     { $set: { customerId: stripeSession.customer } }
   );
