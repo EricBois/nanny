@@ -10,7 +10,6 @@ export default function CheckoutPageContent() {
   const redirectToCustomerPortal = async () => {
     setLoading(true);
     const response = await fetchPostJSON("api/create-portal-session", {});
-    console.log(response);
     window.location.assign(response.portalUrl);
     setLoading(false);
   };

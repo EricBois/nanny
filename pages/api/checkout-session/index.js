@@ -54,7 +54,7 @@ const sessions = async (req, res) => {
     cancel_url: `${DOMAIN}/?canceled=true`,
   });
 
-  const result = usersCollection.updateOne(
+  const result = await usersCollection.updateOne(
     { email: authSession.user.email },
     { $set: { customerId: stripeSession.customer } }
   );

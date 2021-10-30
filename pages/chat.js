@@ -2,7 +2,6 @@ import ChatContent from "components/chat-content";
 import { getSession } from "next-auth/client";
 
 export default function Chat({ session }) {
-  console.log(session);
   return <ChatContent />;
 }
 
