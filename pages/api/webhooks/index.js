@@ -49,7 +49,6 @@ const webhookHandler = async (req, res) => {
             await manageSubscriptionStatusChange(event.id);
         }
       } catch (error) {
-        console.log(error.message);
         return res.status(400).send(`Webhook Error: ${error.message}`);
       }
     }

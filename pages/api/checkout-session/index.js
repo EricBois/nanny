@@ -8,8 +8,6 @@ const sessions = async (req, res) => {
   }
   const authSession = await getSession({ req });
 
-  console.log(authSession);
-
   if (!authSession) {
     res.status(401).json({ message: "Not authenticated!" });
     return;
