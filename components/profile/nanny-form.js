@@ -96,6 +96,7 @@ function ProfileForm() {
               coordinates: { lat: "", lng: "" },
               value: "",
             },
+            completed: true,
           }}
           onSubmit={async (values) => {
             await updateProfile(values);

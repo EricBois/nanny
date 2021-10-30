@@ -1,18 +1,27 @@
 import { getSession } from "next-auth/client";
 import { useProfile } from "lib/profile";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Portal() {
   const router = useRouter();
-  const { profile, getProfile, updateProfile, loading, show, setShow } =
-    useProfile();
+  const { profile, updateProfile } = useProfile();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     if (profile.profileType === "nanny" || profile.profileType === "family") {
       router.push("/dashboard");
+    } else {
+      setLoading(false);
     }
-  }, []);
+  }, [profile]);
+
+  if (loading) return <p>Loading ...</p>;
+
+  const handleClick = (val) => {
+    updateProfile({ profileType: val, completed: false });
+  };
 
   return (
     <div>
@@ -24,6 +33,7 @@ export default function Portal() {
       >
         <span>Are you a</span>
         <button
+          onClick={() => handleClick("nanny")}
           type="button"
           style={{ border: "1px solid black", margin: "0 5px 0 5px" }}
         >
@@ -31,6 +41,7 @@ export default function Portal() {
         </button>
         <span>Or</span>
         <button
+          onClick={() => handleClick("family")}
           type="button"
           style={{ border: "1px solid black", margin: "0 5px 0 5px" }}
         >

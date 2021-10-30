@@ -50,6 +50,8 @@ async function handler(req, res) {
     documents: result.documents,
     phone: result.phone,
     location: result.location,
+    profileType: result.profileType,
+    completed: result.completed,
   });
 }
 
