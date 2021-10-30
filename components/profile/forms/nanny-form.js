@@ -18,6 +18,20 @@ const Input = ({ field, form, ...props }) => {
   );
 };
 
+const TextArea = ({ field, form, ...props }) => {
+  return (
+    <div className=" relative ">
+      <textarea
+        cols="30"
+        rows="10"
+        {...field}
+        className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+        {...props}
+      />
+    </div>
+  );
+};
+
 const Section = ({ name, children }) => (
   <div className="items-center w-full p-4 space-y-4 text-gray-500 md:inline-flex md:space-y-0">
     <h2 className="max-w-sm mx-auto md:w-1/3">{name}</h2>
@@ -96,6 +110,7 @@ function ProfileForm() {
               coordinates: { lat: "", lng: "" },
               value: "",
             },
+            intro: user?.intro || "",
             completed: true,
           }}
           onSubmit={async (values) => {
@@ -193,6 +208,15 @@ function ProfileForm() {
                   `${user?.location?.value}`
                 )}
                 <ErrorMessage name="address" />
+              </Section>
+              <Section name="Introduce Yourself">
+                <Field
+                  name="intro"
+                  placeholder="Describe yourself, your experience, what you have to offer, Clients will be looking at this when they make a choice. "
+                  required
+                  component={TextArea}
+                />
+                <ErrorMessage name="intro" />
               </Section>
               <hr />
               <Section name="Your Documentation">
