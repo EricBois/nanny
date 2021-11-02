@@ -18,6 +18,20 @@ const Input = ({ field, form, ...props }) => {
   );
 };
 
+const TextArea = ({ field, form, ...props }) => {
+  return (
+    <div className=" relative ">
+      <textarea
+        cols="30"
+        rows="10"
+        {...field}
+        className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+        {...props}
+      />
+    </div>
+  );
+};
+
 const Section = ({ name, children }) => (
   <div className="items-center w-full p-4 space-y-4 text-gray-500 md:inline-flex md:space-y-0">
     <h2 className="max-w-sm mx-auto md:w-1/3">{name}</h2>
@@ -96,6 +110,7 @@ function FamilyForm() {
               coordinates: { lat: "", lng: "" },
               value: "",
             },
+            intro: user?.intro || "",
             completed: true,
           }}
           onSubmit={async (values) => {
@@ -195,9 +210,18 @@ function FamilyForm() {
                 )}
                 <ErrorMessage name="address" />
               </Section>
+              <Section name="Introduce Your Family">
+                <Field
+                  name="intro"
+                  placeholder="Describe your family, How many childrens do you have ? How long have you been in the area? What activity does the children like to do ? ... "
+                  required
+                  component={TextArea}
+                />
+                <ErrorMessage name="intro" />
+              </Section>
               <hr />
-              <Section name="Your Documentation">
-                <p>Include all your documents and certifications</p>
+              <Section name="Your Album">
+                <p>Any Family picture that you would like to include</p>
                 {!loading ? (
                   <Input
                     type="file"
